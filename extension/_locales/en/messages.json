@@ -1,0 +1,8 @@
+{
+  "extName": {
+    "message": "Cross-border Trade Toolkit"
+  },
+  "extDesc": {
+    "message": "Seller toolkit: volumetric weight, units, FX rates, time zones, country codes, US/EU tariffs, HS codes, ZIP lookup, image presets."
+  }
+}

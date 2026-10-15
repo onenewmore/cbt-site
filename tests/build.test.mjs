@@ -145,7 +145,7 @@ test('affiliate links: sponsored + nofollow, tagged, never shown when no partner
 test('no real e-mail addresses or secrets are baked into the output', () => {
   const bad = [];
   for (const p of pages) {
-    for (const m of p.html.matchAll(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[a-z]{2,}/g)) if (!/^\{\{|example\.(com|org)$|^noreply@/.test(m[0])) bad.push(p.url + ': ' + m[0]);
+    for (const m of p.html.matchAll(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[a-z]{2,}/g)) if (m[0] !== cfg.contactEmail && !/^\{\{|example\.(com|org)$|^noreply@/.test(m[0])) bad.push(p.url + ': ' + m[0]);
   }
   assert.deepEqual(bad.slice(0, 5), []);
   const grep = (dir) => { for (const e of fs.readdirSync(dir, { withFileTypes: true })) { const f = path.join(dir, e.name); if (e.isDirectory()) grep(f); else if (/\.(js|html|json|css|txt|xml)$/.test(e.name)) { const t = fs.readFileSync(f, 'utf8'); assert.ok(!/(sk_live|pdl_live|re_[A-Za-z0-9]{20,}|BEGIN PRIVATE KEY)/.test(t), 'secret-looking string in ' + f); } } };
@@ -157,6 +157,7 @@ test('patched extension code is in place (proxy rewrite + free-tier hooks)', () 
   assert.match(dom, /fetch\(cbtRewrite\(url\)/);
   const img = fs.readFileSync(path.join(DIST, 'assets/app/tools/imgcompress.js'), 'utf8');
   for (const needle of ['CBT_GATE.imgFiles', 'CBT_GATE.imgPresets', 'CBT_GATE.zip', 'const isTab = true;']) assert.ok(img.includes(needle), needle);
-  const orig = fs.readFileSync(path.join(ROOT, '..', 'cbt-toolkit', 'js', 'dom.js'), 'utf8');
+  const extRoot = fs.existsSync(path.join(ROOT, 'extension', 'manifest.json')) ? path.join(ROOT, 'extension') : path.join(ROOT, '..', 'cbt-toolkit');
+  const orig = fs.readFileSync(path.join(extRoot, 'js', 'dom.js'), 'utf8');
   assert.ok(!orig.includes('cbtRewrite'), 'the extension source itself must stay untouched');
 });

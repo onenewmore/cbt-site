@@ -10,7 +10,7 @@ import { buildPages } from './pages/index.mjs';
 import { UI } from '../content/ui.mjs';
 
 const strict = process.argv.includes('--strict');
-const EXT_DIR = path.resolve(process.env.EXT_DIR || path.join(ROOT, '..', 'cbt-toolkit'));
+const EXT_DIR = path.resolve(process.env.EXT_DIR || (fs.existsSync(path.join(ROOT, 'extension', 'manifest.json')) ? path.join(ROOT, 'extension') : path.join(ROOT, '..', 'cbt-toolkit')));
 const DIST = path.join(ROOT, 'dist');
 const warnings = [];
 const warn = (m) => warnings.push(m);
