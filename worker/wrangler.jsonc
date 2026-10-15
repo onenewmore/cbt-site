@@ -13,6 +13,9 @@
     "run_worker_first": ["/api/*", "/go/*"],
     "not_found_handling": "404-page"
   },
+  "routes": [
+    { "pattern": "tools.autoaitools.com", "custom_domain": true }
+  ],
   "kv_namespaces": [
     { "binding": "CBT_KV", "id": "REPLACE_WITH_KV_NAMESPACE_ID" }
   ],
@@ -21,9 +24,9 @@
   ],
   "triggers": { "crons": ["0 2 * * *"] },
   "vars": {
-    "SITE_URL": "https://REPLACE-WITH-YOUR-DOMAIN",
+    "SITE_URL": "https://tools.autoaitools.com",
     "PADDLE_ENV": "sandbox",               // switch to "production" only after Paddle approves your account
-    "MAIL_FROM": "Cross-border Trade Toolkit <noreply@REPLACE-WITH-YOUR-DOMAIN>",
+    "MAIL_FROM": "Cross-border Trade Toolkit <noreply@autoaitools.com>",
     "CONTACT_EMAIL": "",                    // optional: added to the User-Agent of upstream requests
     "LEAD_NOTIFY_EMAIL": "",                // where new leads are emailed (leave empty to rely on the webhook / admin export)
     "FX_SOURCES": "er,fx,cdn",
