@@ -14,7 +14,7 @@
     "not_found_handling": "404-page"
   },
   "routes": [
-    { "pattern": "tools.autoaitools.com", "custom_domain": true }
+    { "pattern": "b2b.autoaitools.com", "custom_domain": true }
   ],
   "kv_namespaces": [
     { "binding": "CBT_KV", "id": "REPLACE_WITH_KV_NAMESPACE_ID" }
@@ -24,7 +24,7 @@
   ],
   "triggers": { "crons": ["0 2 * * *"] },
   "vars": {
-    "SITE_URL": "https://tools.autoaitools.com",
+    "SITE_URL": "https://b2b.autoaitools.com",
     "PADDLE_ENV": "sandbox",               // switch to "production" only after Paddle approves your account
     "MAIL_FROM": "Cross-border Trade Toolkit <noreply@autoaitools.com>",
     "CONTACT_EMAIL": "",                    // optional: added to the User-Agent of upstream requests
