@@ -14,9 +14,9 @@
     "env": "sandbox",
     "clientToken": "",
     "prices": {
-      "monthly": "",
-      "annual": "",
-      "pass": ""
+      "monthly": "pri_01m4yvf6gserfj78hz1fxdkymx",
+      "annual": "pri_01m4yvfymgepj628tq3yjh3s3z",
+      "pass": "pri_01m4yvgxmzs65db5nxygfnqvz1"
     }
   },
   "pricing": {

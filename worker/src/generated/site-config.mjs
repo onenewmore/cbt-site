@@ -21,5 +21,5 @@ export default {
     "annual": 79,
     "pass": 79
   },
-  "passPriceId": ""
+  "passPriceId": "pri_01m4yvgxmzs65db5nxygfnqvz1"
 };
