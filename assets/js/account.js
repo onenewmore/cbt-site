@@ -30,7 +30,7 @@ async function render() {
   const end = m.periodEnd ? new Date(m.periodEnd).toISOString().slice(0, 10) : '';
   main.innerHTML = `
     <div class="acct-card"><p>${esc(L.signedAs)} <b>${esc(m.email)}</b> · <button class="btn" id="signout" type="button">${esc(L.signout)}</button></p>
-      <p>${esc(L.plan)}: <b>${pro ? 'Pro' : esc(L.free)}</b>${pro ? ` · ${esc(L.status)}: ${esc(m.status)}${end ? ` · ${esc(L.renews)}: ${esc(end)}` : ''}` : ''}</p>
+      <p>${esc(L.plan)}: <b>${pro ? 'Pro' : esc(L.free)}</b>${pro ? ` · ${esc(L.status)}: ${esc(m.status)}${m.interval === 'lifetime' ? ` · ${esc(L.lifetime)}` : end ? ` · ${esc(L.renews)}: ${esc(end)}` : ''}` : ''}</p>
       ${pro ? `<p><button class="btn" id="portal" type="button">${esc(L.manage)}</button></p>` : `<p><a class="btn primary" href="${cfg.lang === 'zh' ? '/zh' : ''}/pricing/">Pro</a></p>`}
     </div>
     ${pro ? `

@@ -2,7 +2,7 @@
 // NOTE: written from Paddle's public API shape without live verification. Check every field against the current docs in the
 // SANDBOX before going live (see docs/LAUNCH.md, "Verify before launch").
 import { json, err, hmacHex, safeEqual, now, fetchWithTimeout, normEmail, isEmail } from './util.mjs';
-import { SUB_EVENTS, getSub, subKey, recordFromSubscription, getPass, passKey, extendPass } from './entitlement.mjs';
+import { SUB_EVENTS, getSub, subKey, recordFromSubscription, getPass, passKey, grantLifetime } from './entitlement.mjs';
 import { sendLoginEmail } from './auth.mjs';
 import siteConfig from './generated/site-config.mjs';
 
@@ -87,7 +87,7 @@ export async function handleWebhook(req, env, ctx) {
   return json({ ok: true, status: rec.status });
 }
 
-// One-time pass: transaction.completed for the configured one-time price (no subscription attached).
+// Lifetime Pro: transaction.completed for the configured one-time price (no subscription attached).
 // Field names follow Paddle Billing's transaction entity (id, status, customer_id, subscription_id, items[].price.id).
 // NOT verified against a live sandbox yet - check before switching PADDLE_ENV to production.
 export function passPriceIn(data, priceId) {
@@ -109,7 +109,7 @@ async function handlePassTransaction(env, ctx, ev, id) {
   if (!email) return err(500, 'no_email');
   const prev = await getPass(env, email);
   if (prev && Array.isArray(prev.txns) && prev.txns.includes(txnId)) return done({ duplicate: true });
-  const pass = extendPass(prev, txnId);
+  const pass = grantLifetime(prev, txnId);
   pass.customerId = data.customer_id || (prev && prev.customerId) || null;
   await env.CBT_KV.put(passKey(email), JSON.stringify(pass));
   if (!prev && !(await getSub(env, email))) {
@@ -117,7 +117,7 @@ async function handlePassTransaction(env, ctx, ev, id) {
     const p = sendLoginEmail(env, email, lang, { welcome: true });
     if (ctx && ctx.waitUntil) ctx.waitUntil(p); else await p;
   }
-  return done({ pass: true, periodEnd: pass.periodEnd });
+  return done({ lifetime: true });
 }
 
 // Creates a customer-portal session so the user can update the card, view invoices and cancel on Paddle's hosted pages.
