@@ -2,7 +2,7 @@
 export default {
   "siteUrl": "https://b2b.autoaitools.com",
   "brand": "Cross-border Trade Toolkit",
-  "company": "edong",
+  "company": "DONG YU",
   "contactEmail": "adoooing@gmail.com",
   "free": {
     "imageFilesPerRun": 3,
