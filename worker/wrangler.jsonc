@@ -17,7 +17,7 @@
     { "pattern": "b2b.autoaitools.com", "custom_domain": true }
   ],
   "kv_namespaces": [
-    { "binding": "CBT_KV", "id": "REPLACE_WITH_KV_NAMESPACE_ID" }
+    { "binding": "CBT_KV", "id": "f3374def65294e1f8d2eb9b6941e5c00" }
   ],
   "analytics_engine_datasets": [
     { "binding": "EVENTS", "dataset": "cbt_events" }
