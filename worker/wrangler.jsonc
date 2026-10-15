@@ -28,7 +28,7 @@
     "PADDLE_ENV": "sandbox",               // switch to "production" only after Paddle approves your account
     "MAIL_FROM": "Cross-border Trade Toolkit <noreply@autoaitools.com>",
     "CONTACT_EMAIL": "",                    // optional: added to the User-Agent of upstream requests
-    "LEAD_NOTIFY_EMAIL": "",                // where new leads are emailed (leave empty to rely on the webhook / admin export)
+    "LEAD_NOTIFY_EMAIL": "adoooing@gmail.com",                // where new leads are emailed (leave empty to rely on the webhook / admin export)
     "FX_SOURCES": "er,fx,cdn",
     "CRON_MAX_CODES": "40"                  // HTS look-ups per daily run (Workers free plan allows ~50 subrequests per invocation)
   }

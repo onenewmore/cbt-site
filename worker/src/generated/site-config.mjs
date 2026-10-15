@@ -18,6 +18,8 @@ export default {
   "pricing": {
     "currency": "USD",
     "monthly": 9,
-    "annual": 79
-  }
+    "annual": 79,
+    "pass": 79
+  },
+  "passPriceId": ""
 };

@@ -21,6 +21,7 @@ export function loadConfig() {
   if (env.PADDLE_ENV) cfg.paddle.env = env.PADDLE_ENV;
   if (env.PADDLE_PRICE_MONTHLY) cfg.paddle.prices.monthly = env.PADDLE_PRICE_MONTHLY;
   if (env.PADDLE_PRICE_ANNUAL) cfg.paddle.prices.annual = env.PADDLE_PRICE_ANNUAL;
+  if (env.PADDLE_PRICE_PASS) cfg.paddle.prices.pass = env.PADDLE_PRICE_PASS;
   if (env.PLAUSIBLE_DOMAIN) cfg.analytics.plausibleDomain = env.PLAUSIBLE_DOMAIN;
   if (env.GOVERNING_LAW) cfg.governingLaw = env.GOVERNING_LAW;
   if (env.TURNSTILE_SITE_KEY) cfg.turnstileSiteKey = env.TURNSTILE_SITE_KEY;

@@ -282,7 +282,8 @@ function pricingPages(ctx) {
   <section class="plan"><h2>${esc(p.free)}</h2><p class="price">${money(0)}</p><ul>${p.freeList.map((x) => `<li>${esc(fill(x))}</li>`).join('')}</ul><p><a class="btn" href="${url(lang, '/tools/')}">${esc(u.home.toolsH)}</a></p></section>
   <section class="plan pro"><h2>${esc(p.pro)} <span class="tag-pro">${esc(u.common.proBadge)}</span></h2>
     <div class="billing" role="group"><label><input type="radio" name="bill" value="monthly" checked> ${esc(p.monthly)} <b>${money(cfg.pricing.monthly)}</b> ${esc(p.perMonth)}</label>
-    <label><input type="radio" name="bill" value="annual"> ${esc(p.annual)} <b>${money(cfg.pricing.annual)}</b> ${esc(p.perYear)} <span class="tag-save">${esc(p.save.replace('{pct}', save))}</span></label></div>
+    <label><input type="radio" name="bill" value="annual"> ${esc(p.annual)} <b>${money(cfg.pricing.annual)}</b> ${esc(p.perYear)} <span class="tag-save">${esc(p.save.replace('{pct}', save))}</span></label>${cfg.paddle.prices.pass ? `
+    <label><input type="radio" name="bill" value="pass"> ${esc(p.pass)} <b>${money(cfg.pricing.pass)}</b> <span class="muted small">${esc(p.passNote)}</span></label>` : ''}</div>
     <ul>${p.proList.map((x) => `<li>${esc(fillPro(x))}</li>`).join('')}</ul>
     <p><button class="btn primary" id="buy" type="button" data-label-ready="${esc(p.cta)}" data-label-wait="${esc(p.ctaWait)}" data-label-current="${esc(p.ctaCurrent)}">${esc(ready ? p.cta : p.ctaWait)}</button></p>
     <div id="waitlist" hidden><h3>${esc(p.waitlistH)}</h3><p class="muted">${esc(p.waitlistLead)}</p>${quoteFormWaitlist(ctx, lang)}</div>

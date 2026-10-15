@@ -5,7 +5,7 @@
 // codes are processed oldest-snapshot-first, so a long watchlist rotates across days instead of starving.
 import { now, sleep, escHtml } from './util.mjs';
 import { sendMail, layoutEmail } from './mail.mjs';
-import { getSub, isActive } from './entitlement.mjs';
+import { hasPro } from './entitlement.mjs';
 import { prefsKey } from './pro.mjs';
 import { htsSearch } from './fetchers.mjs';
 import { pickHtsItem, formatHts, extract99Refs } from './generated/js/calc.js';
@@ -65,8 +65,7 @@ export async function runScheduled(env) {
   const users = [];
   for (const k of await listAll(env, 'prefs:')) {
     const email = k.slice('prefs:'.length);
-    const sub = await getSub(env, email);
-    if (!isActive(sub)) continue;
+    if (!(await hasPro(env, email))) continue;
     const prefs = JSON.parse((await env.CBT_KV.get(k)) || 'null');
     if (prefs) users.push({ email, prefs });
   }

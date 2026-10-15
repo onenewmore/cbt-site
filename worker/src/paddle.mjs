@@ -2,8 +2,9 @@
 // NOTE: written from Paddle's public API shape without live verification. Check every field against the current docs in the
 // SANDBOX before going live (see docs/LAUNCH.md, "Verify before launch").
 import { json, err, hmacHex, safeEqual, now, fetchWithTimeout, normEmail, isEmail } from './util.mjs';
-import { SUB_EVENTS, getSub, subKey, recordFromSubscription } from './entitlement.mjs';
+import { SUB_EVENTS, getSub, subKey, recordFromSubscription, getPass, passKey, extendPass } from './entitlement.mjs';
 import { sendLoginEmail } from './auth.mjs';
+import siteConfig from './generated/site-config.mjs';
 
 const apiBase = (env) => (env.PADDLE_ENV === 'production' ? 'https://api.paddle.com' : 'https://sandbox-api.paddle.com');
 export const SIGNATURE_TOLERANCE_S = 300;
@@ -54,6 +55,7 @@ export async function handleWebhook(req, env, ctx) {
   const id = String(ev.event_id || '');
   if (!id) return err(400, 'no_event_id');
   if (await env.CBT_KV.get(`evt:${id}`)) return json({ ok: true, duplicate: true });
+  if (type === 'transaction.completed' && ev.data) return handlePassTransaction(env, ctx, ev, id);
   if (!SUB_EVENTS.has(type) || !ev.data) { await env.CBT_KV.put(`evt:${id}`, '1', { expirationTtl: 30 * 86_400 }); return json({ ok: true, ignored: type }); }
 
   const data = ev.data;
@@ -85,9 +87,42 @@ export async function handleWebhook(req, env, ctx) {
   return json({ ok: true, status: rec.status });
 }
 
+// One-time pass: transaction.completed for the configured one-time price (no subscription attached).
+// Field names follow Paddle Billing's transaction entity (id, status, customer_id, subscription_id, items[].price.id).
+// NOT verified against a live sandbox yet - check before switching PADDLE_ENV to production.
+export function passPriceIn(data, priceId) {
+  if (!priceId || !data || data.subscription_id) return false;
+  return Array.isArray(data.items) && data.items.some((it) => (it.price && it.price.id === priceId) || it.price_id === priceId);
+}
+
+async function handlePassTransaction(env, ctx, ev, id) {
+  const data = ev.data;
+  const done = async (extra) => { await env.CBT_KV.put(`evt:${id}`, '1', { expirationTtl: 30 * 86_400 }); return json({ ok: true, ...extra }); };
+  if (!passPriceIn(data, env.PADDLE_PRICE_PASS || siteConfig.passPriceId)) return done({ ignored: 'transaction.completed' });
+  const txnId = String(data.id || '');
+  if (!txnId) return err(400, 'no_transaction_id');
+  let email;
+  try { email = await emailForCustomer(env, data.customer_id); } catch (e) {
+    console.error('customer lookup failed', e && e.message);
+    return err(500, 'customer_lookup_failed');
+  }
+  if (!email) return err(500, 'no_email');
+  const prev = await getPass(env, email);
+  if (prev && Array.isArray(prev.txns) && prev.txns.includes(txnId)) return done({ duplicate: true });
+  const pass = extendPass(prev, txnId);
+  pass.customerId = data.customer_id || (prev && prev.customerId) || null;
+  await env.CBT_KV.put(passKey(email), JSON.stringify(pass));
+  if (!prev && !(await getSub(env, email))) {
+    const lang = data.custom_data && data.custom_data.lang === 'zh' ? 'zh' : 'en';
+    const p = sendLoginEmail(env, email, lang, { welcome: true });
+    if (ctx && ctx.waitUntil) ctx.waitUntil(p); else await p;
+  }
+  return done({ pass: true, periodEnd: pass.periodEnd });
+}
+
 // Creates a customer-portal session so the user can update the card, view invoices and cancel on Paddle's hosted pages.
 export async function createPortalUrl(env, email) {
-  const sub = await getSub(env, email);
+  const sub = (await getSub(env, email)) || (await getPass(env, email));
   if (!sub || !sub.customerId) return null;
   const body = sub.subscriptionId ? { subscription_ids: [sub.subscriptionId] } : {};
   const r = await paddleApi(env, `/customers/${encodeURIComponent(sub.customerId)}/portal-sessions`, { method: 'POST', body: JSON.stringify(body) });

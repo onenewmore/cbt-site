@@ -2,7 +2,7 @@
 // The link opens the static /account/ page; the page's JS exchanges the token, so mail scanners that only fetch URLs cannot burn it.
 import { json, err, readJson, signToken, verifyToken, randomHex, normEmail, isEmail, clientIp, kvLimit, now } from './util.mjs';
 import { sendMail, layoutEmail } from './mail.mjs';
-import { getSub } from './entitlement.mjs';
+import { getSub, getPass } from './entitlement.mjs';
 
 export const MAGIC_TTL_S = 15 * 60;
 export const SESSION_TTL_S = 30 * 86_400;
@@ -54,8 +54,8 @@ export async function handleLogin(req, env) {
   const a = await kvLimit(env, 'login-ip', ip, 8, 600);
   const b = await kvLimit(env, 'login-email', email, 3, 600);
   if (!a.ok || !b.ok) return err(429, 'rate_limited', undefined, { 'retry-after': String(Math.max(a.retryAfter, b.retryAfter)) });
-  const sub = await getSub(env, email);
-  if (sub) await sendLoginEmail(env, email, lang);
+  const known = (await getSub(env, email)) || (await getPass(env, email));
+  if (known) await sendLoginEmail(env, email, lang);
   return json({ ok: true });
 }
 

@@ -127,6 +127,19 @@ PADDLE_PRICE_MONTHLY=pri_… PADDLE_PRICE_ANNUAL=pri_… npm run build:prod
 
 统计里 `limit_hit`（谁撞到了限制）和 `pro_cta → checkout_open → checkout_complete` 就是用来做这个决定的。
 
+
+### 微信支付 / 支付宝：一年通行证（一次性付款）
+
+Paddle 的微信支付只支持**一次性商品**，不支持订阅（见 Paddle 开发者文档 WeChat Pay 更新说明）。所以另设一个一次性价格：
+
+1. 在 Paddle 里新建一个**一次性**价格（不设 billing cycle），金额与 `config/site.config.json` 的 `pricing.pass` 一致（默认 $79）。
+2. 把价格 ID 填到 `paddle.prices.pass`（或构建变量 `PADDLE_PRICE_PASS`），定价页会自动多出"一年通行证"选项。
+3. 在 Paddle → Checkout → Checkout configuration 里打开 WeChat Pay 和 Alipay。
+4. Webhook 需要订阅 `transaction.completed` 事件。收到该价格的成交后，给买家 365 天 Pro；提前续买会顺延，不会丢天数；同一笔交易重复推送只算一次。
+5. 字段名（`subscription_id`、`items[].price.id`）按 Paddle 交易对象编写，**未在沙盒实测**，上线前请用沙盒走一遍。
+
+加密货币：Paddle 不支持，本项目没有接入，原因见对话记录（税务代收失效、无法自动续费、中国大陆对虚拟货币交易有监管限制）。
+
 ## 5. Cloudflare 部署
 
 1. 域名接入 Cloudflare。

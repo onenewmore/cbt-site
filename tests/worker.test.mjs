@@ -583,3 +583,45 @@ test('diffFingerprints describes changes', () => {
   assert.deepEqual(diffFingerprints(a, b), ['general: "Free" → "5%"', 'Chapter 99 added: 9903.88.02', 'Chapter 99 removed: 9903.88.01']);
   assert.deepEqual(diffFingerprints({ kind: 'list', lines: ['a | 1'] }, { kind: 'list', lines: ['a | 1', 'b | 2'] }), ['+ b | 2']);
 });
+
+// ---- one-time pass (WeChat Pay / Alipay) ----
+import { extendPass, passActive, PASS_DAYS } from '../worker/src/entitlement.mjs';
+import { passPriceIn } from '../worker/src/paddle.mjs';
+
+test('pass: extends from the later of now and the current end; price matching ignores subscriptions', () => {
+  const t = 1_800_000_000_000, day = 86_400_000;
+  const a = extendPass(null, 'txn_1', t);
+  assert.equal(a.periodEnd, t + PASS_DAYS * day);
+  const b = extendPass(a, 'txn_2', t + 10 * day);
+  assert.equal(b.periodEnd, t + 2 * PASS_DAYS * day, 'buying early stacks');
+  assert.deepEqual(b.txns, ['txn_1', 'txn_2']);
+  const c = extendPass({ periodEnd: t - day, txns: ['txn_0'] }, 'txn_3', t);
+  assert.equal(c.periodEnd, t + PASS_DAYS * day, 'expired pass restarts from now');
+  assert.equal(passActive(a, t + day), true);
+  assert.equal(passActive(a, a.periodEnd + 1), false);
+  assert.equal(passPriceIn({ items: [{ price: { id: 'pri_pass' } }] }, 'pri_pass'), true);
+  assert.equal(passPriceIn({ subscription_id: 'sub_1', items: [{ price: { id: 'pri_pass' } }] }, 'pri_pass'), false);
+  assert.equal(passPriceIn({ items: [{ price: { id: 'pri_other' } }] }, 'pri_pass'), false);
+  assert.equal(passPriceIn({ items: [{ price: { id: 'pri_pass' } }] }, ''), false);
+});
+
+test('webhook: transaction.completed for the pass grants Pro once, sign-in works, other transactions are ignored', async () => {
+  const env = makeEnv({ PADDLE_PRICE_PASS: 'pri_pass' });
+  mockPaddleCustomer('wechat@example.com');
+  const txn = (eid, tid, price = 'pri_pass') => ({ event_id: eid, event_type: 'transaction.completed', occurred_at: new Date().toISOString(),
+    data: { id: tid, status: 'completed', customer_id: 'ctm_01', subscription_id: null, items: [{ price: { id: price }, quantity: 1 }], custom_data: { lang: 'zh' } } });
+  let r = await signedWebhook(env, txn('evt_t0', 'txn_other', 'pri_other'));
+  assert.equal((await body(r)).ignored, 'transaction.completed');
+  r = await signedWebhook(env, txn('evt_t1', 'txn_a'));
+  const b1 = await body(r);
+  assert.equal(b1.pass, true);
+  r = await signedWebhook(env, txn('evt_t2', 'txn_a'));
+  assert.equal((await body(r)).duplicate, true, 'same transaction under a new event id does not add another year');
+  const pass = JSON.parse(await env.CBT_KV.get('pass:wechat@example.com'));
+  assert.equal(pass.periodEnd, b1.periodEnd);
+  const s = await signIn(env, 'wechat@example.com');
+  assert.equal(s.status, 200);
+  const me = await body(await call(env, '/api/pro/me', { headers: auth(s.session.token) }));
+  assert.equal(me.plan, 'pro');
+  assert.equal(me.interval, 'pass');
+});

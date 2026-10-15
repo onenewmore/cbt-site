@@ -25,15 +25,41 @@ export function isActive(rec, t = now()) {
   }
 }
 
+// ---- one-time "Pro pass" (non-recurring). Paddle offers WeChat Pay only for one-time items, so this is how
+// customers paying with WeChat Pay / Alipay get Pro. Stored separately so subscription events never overwrite it.
+export const PASS_DAYS = 365;
+export const passKey = (email) => `pass:${email}`;
+export async function getPass(env, email) {
+  const raw = await env.CBT_KV.get(passKey(email));
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch { return null; }
+}
+export const passActive = (pass, t = now()) => !!(pass && pass.periodEnd && pass.periodEnd > t);
+// A new pass starts when the current one (if any) ends, so buying early never loses days.
+export function extendPass(prev, txnId, t = now(), days = PASS_DAYS) {
+  const start = passActive(prev, t) ? prev.periodEnd : t;
+  return { periodEnd: start + days * 86_400_000, txns: [...((prev && prev.txns) || []).slice(-19), txnId], updatedAt: t };
+}
+
+// true if the email has Pro through either a subscription or a pass
+export async function hasPro(env, email, t = now()) {
+  if (isActive(await getSub(env, email), t)) return true;
+  return passActive(await getPass(env, email), t);
+}
+
 export async function getEntitlement(env, email) {
   const rec = await getSub(env, email);
-  const active = isActive(rec);
+  const subOn = isActive(rec);
+  const pass = await getPass(env, email);
+  const passOn = passActive(pass);
+  const active = subOn || passOn;
+  const usePass = !subOn && passOn;
   return {
     plan: active ? 'pro' : 'free',
-    status: rec ? rec.status : 'none',
-    interval: rec ? rec.interval : null,
-    periodEnd: rec ? rec.periodEnd || null : null,
-    cancelAtPeriodEnd: !!(rec && rec.cancelAtPeriodEnd),
+    status: usePass ? 'active' : rec ? rec.status : 'none',
+    interval: usePass ? 'pass' : rec ? rec.interval : null,
+    periodEnd: usePass ? pass.periodEnd : rec ? rec.periodEnd || null : null,
+    cancelAtPeriodEnd: usePass ? false : !!(rec && rec.cancelAtPeriodEnd),
     customerId: rec ? rec.customerId : null,
     subscriptionId: rec ? rec.subscriptionId : null,
   };
