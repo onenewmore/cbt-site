@@ -12,7 +12,7 @@
   },
   "paddle": {
     "env": "sandbox",
-    "clientToken": "",
+    "clientToken": "test_e99b514eac066cb22ca71791944",
     "prices": {
       "monthly": "pri_01m4yvf6gserfj78hz1fxdkymx",
       "annual": "pri_01m4yvfymgepj628tq3yjh3s3z",
