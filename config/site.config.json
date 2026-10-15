@@ -1,0 +1,42 @@
+{
+  "brand": "Cross-border Trade Toolkit",
+  "brandZh": "跨境电商工具箱",
+  "tagline": "Free calculators and lookups for cross-border sellers",
+  "siteUrl": "https://YOUR-DOMAIN.example",
+  "company": "edong",
+  "contactEmail": "adoooing@gmail.com",
+  "extensionUrl": "https://chromewebstore.google.com/detail/ljdbdjhdhpkhknialkgindocdjigjkpi",
+  "analytics": {
+    "plausibleDomain": "",
+    "firstPartyBeacon": true
+  },
+  "paddle": {
+    "env": "sandbox",
+    "clientToken": "",
+    "prices": {
+      "monthly": "",
+      "annual": ""
+    }
+  },
+  "pricing": {
+    "currency": "USD",
+    "monthly": 9,
+    "annual": 79
+  },
+  "free": {
+    "imageFilesPerRun": 3,
+    "imagePresetsPerRun": 3,
+    "bulkRows": 5
+  },
+  "pro": {
+    "bulkRows": 5000,
+    "watchlistCodes": 20,
+    "apiMonthlyCalls": 20000,
+    "apiPerMinute": 60
+  },
+  "turnstileSiteKey": "",
+  "dataAsOf": "2026-10",
+  "governingLaw": "the laws of the People's Republic of China",
+  "refundDays": 14,
+  "analyticsProviderLabel": ""
+}

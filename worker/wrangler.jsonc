@@ -1,0 +1,32 @@
+// Cloudflare Worker + static assets. Fill the REPLACE_ values, then: npm run build:prod && npx wrangler deploy
+// Secrets (never put these in this file):  npx wrangler secret put SESSION_SECRET | PADDLE_WEBHOOK_SECRET | PADDLE_API_KEY | RESEND_API_KEY | ADMIN_TOKEN
+// Optional secrets: TURNSTILE_SECRET, LEADS_WEBHOOK_URL
+// Verify binding names / options against the current Cloudflare docs before the first deploy (see docs/LAUNCH.md).
+{
+  "name": "cbt-site",
+  "main": "src/index.mjs",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "../dist",
+    "binding": "ASSETS",
+    // The Worker runs first only for these paths; everything else is served straight from static assets.
+    "run_worker_first": ["/api/*", "/go/*"],
+    "not_found_handling": "404-page"
+  },
+  "kv_namespaces": [
+    { "binding": "CBT_KV", "id": "REPLACE_WITH_KV_NAMESPACE_ID" }
+  ],
+  "analytics_engine_datasets": [
+    { "binding": "EVENTS", "dataset": "cbt_events" }
+  ],
+  "triggers": { "crons": ["0 2 * * *"] },
+  "vars": {
+    "SITE_URL": "https://REPLACE-WITH-YOUR-DOMAIN",
+    "PADDLE_ENV": "sandbox",               // switch to "production" only after Paddle approves your account
+    "MAIL_FROM": "Cross-border Trade Toolkit <noreply@REPLACE-WITH-YOUR-DOMAIN>",
+    "CONTACT_EMAIL": "",                    // optional: added to the User-Agent of upstream requests
+    "LEAD_NOTIFY_EMAIL": "",                // where new leads are emailed (leave empty to rely on the webhook / admin export)
+    "FX_SOURCES": "er,fx,cdn",
+    "CRON_MAX_CODES": "40"                  // HTS look-ups per daily run (Workers free plan allows ~50 subrequests per invocation)
+  }
+}

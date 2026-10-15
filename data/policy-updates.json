@@ -1,0 +1,48 @@
+{
+  "tracked": [
+    { "id": "us-301", "area": { "en": "US Section 301 additional duties by origin", "zh": "美国 Section 301 按原产国加征关税" }, "usedBy": ["us-tariff-calculator"], "reviewed": "2026-07-27" },
+    { "id": "us-htsa", "area": { "en": "US HTS base rates (live from USITC)", "zh": "美国 HTS 基础税率（实时取自 USITC）" }, "usedBy": ["us-tariff-calculator", "hs-code-lookup"], "reviewed": "live" },
+    { "id": "eu-low-value", "area": { "en": "EU flat duty on low-value parcels", "zh": "欧盟低价值包裹固定关税" }, "usedBy": ["eu-import-duty-vat-calculator"], "reviewed": "2026-07-01" },
+    { "id": "eu-vat", "area": { "en": "EU standard VAT rates (27 member states)", "zh": "欧盟 27 国标准 VAT 税率" }, "usedBy": ["eu-import-duty-vat-calculator"], "reviewed": "2026-06" },
+    { "id": "img-presets", "area": { "en": "Marketplace image presets (9 marketplaces)", "zh": "平台图片预设（9 个平台）" }, "usedBy": ["image-resizer-for-marketplaces"], "reviewed": "2026-10" },
+    { "id": "hs-2022", "area": { "en": "HS reference list (HS 2022 subheadings)", "zh": "HS 参考库（HS 2022 子目）" }, "usedBy": ["hs-code-lookup"], "reviewed": "2026-10" }
+  ],
+  "updates": [
+    {
+      "id": "2026-07-24-us-301",
+      "date": "2026-07-24",
+      "region": "US",
+      "tags": ["us-tariff"],
+      "title": { "en": "US replaces temporary tariffs with new Section 301 duties", "zh": "美国以新的 Section 301 关税取代临时关税" },
+      "summary": {
+        "en": "New Section 301 additional duties apply by origin from 2026-07-24, replacing the temporary Section 122 10% surcharge that expired the same day. The 2025 IEEPA tariffs had already ended on 2026-02-24 after the Supreme Court ruling of 2026-02-20. Several partners have combined caps on MFN plus 301 duties; exemptions and Section 232 goods are handled separately.",
+        "zh": "自 2026-07-24 起，美国按原产国征收新的 Section 301 附加关税，取代同日到期的临时 Section 122 10% 附加税。2025 年的 IEEPA 关税已在最高法院 2026-02-20 裁决后于 2026-02-24 终止。部分伙伴适用 MFN 加 301 的合计上限；豁免和 Section 232 商品另行处理。"
+      },
+      "source": { "label": "Morgan Lewis LawFlash, 27 Jul 2026", "url": "https://www.morganlewis.com/pubs/2026/07/us-administration-rebuilds-global-tariff-program-under-section-301" }
+    },
+    {
+      "id": "2026-07-01-eu-low-value",
+      "date": "2026-07-01",
+      "region": "EU",
+      "tags": ["eu-duty"],
+      "title": { "en": "EU applies €3 flat duty to low-value parcels", "zh": "欧盟对低价值包裹征收 €3 固定关税" },
+      "summary": {
+        "en": "From 2026-07-01 a temporary flat customs duty of €3 applies to low-value B2C parcels up to €150, until the EU customs data hub regime is in place (around 2028).",
+        "zh": "自 2026-07-01 起，对 €150 以下的 B2C 低价值包裹征收 €3 临时固定关税，直到欧盟海关数据中心制度生效（约 2028 年）。"
+      },
+      "source": { "label": "European Commission (verify on the official site)", "url": "https://taxation-customs.ec.europa.eu/" }
+    },
+    {
+      "id": "2026-10-img-presets",
+      "date": "2026-10-14",
+      "region": "Global",
+      "tags": ["image-presets"],
+      "title": { "en": "Marketplace image presets reviewed", "zh": "平台图片预设完成复核" },
+      "summary": {
+        "en": "Reviewed the built-in image size and file-size references for Amazon, Walmart, eBay, Temu, AliExpress, Shopee, TikTok Shop, Lazada and Shopify. Temu and TikTok Shop file-size caps are reference values; Lazada uses a conservative 2 MB.",
+        "zh": "复核了亚马逊、沃尔玛、eBay、Temu、速卖通、Shopee、TikTok Shop、Lazada 和 Shopify 的内置图片尺寸与体积参考。Temu 和 TikTok Shop 的体积上限为参考值；Lazada 采用保守的 2 MB。"
+      },
+      "source": null
+    }
+  ]
+}

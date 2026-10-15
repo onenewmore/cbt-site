@@ -1,0 +1,19 @@
+{
+  "name": "cbt-site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Cross-border Trade Toolkit — website, Pro subscription backend (Cloudflare Worker), SEO pages, affiliate & lead capture",
+  "scripts": {
+    "build": "node src/build.mjs",
+    "build:prod": "node src/build.mjs --strict",
+    "dev": "node scripts/dev.mjs",
+    "test": "node src/build.mjs && node --test tests/*.test.mjs",
+    "test:e2e": "node src/build.mjs && python3 tests/e2e_site.py",
+    "test:smoke": "python3 tests/smoke_site.py",
+    "deploy": "npm run build:prod && npx wrangler deploy -c worker/wrangler.jsonc"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
